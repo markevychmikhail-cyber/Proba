@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EnergoKvartyra — Резервне живлення для квартири</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-dark: #0d5c56;
+      --accent: #14b8a6;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #059669;
+      --warning: #d97706;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 64px;
+    }
+
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo span {
+      background: var(--primary);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    nav a {
+      margin-left: 24px;
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
+      color: white;
+      padding: 70px 0 80px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      opacity: 0.95;
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: white;
+      color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn-accent {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-accent:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Calculator Section */
+    .section {
+      padding: 60px 0;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 40px;
+      font-size: 1.05rem;
+    }
+
+    .calc-card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      padding: 32px;
+      border: 1px solid var(--border);
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    @media (max-width: 800px) {
+      .calc-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .appliances h3 {
+      font-size: 1.15rem;
+      margin-bottom: 16px;
+    }
+
+    .appliance-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .appliance-item:last-child {
+      border-bottom: none;
+    }
+
+    .appliance-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .appliance-info input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+
+    .appliance-name {
+      font-weight: 500;
+    }
+
+    .appliance-watts {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .hours-input {
+      width: 70px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .result-box {
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    .result-box h3 {
+      color: var(--primary);
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 1.05rem;
+    }
+
+    .result-row strong {
+      color: var(--primary-dark);
+    }
+
+    .recommendation {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed #99f6e4;
+    }
+
+    .rec-item {
+      background: white;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rec-item .price {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-best {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-budget {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-premium {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    /* Comparison */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-table th {
+      background: #f1f5f9;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Features */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 28px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: #ccfbf1;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 8px;
+      font-size: 1.15rem;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* CTA */
+    .cta {
+      background: linear-gradient(135deg, #0f766e, #0d9488);
+      color: white;
+      padding: 50px 0;
+      text-align: center;
+      border-radius: 20px;
+      margin: 40px 0;
+    }
+
+    .cta h2 {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+
+    .cta p {
+      opacity: 0.9;
+      margin-bottom: 24px;
+    }
+
+    /* Footer */
+    footer {
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 40px 0 24px;
+      margin-top: 60px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-logo {
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    footer a {
+      color: #94a3b8;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: white;
+    }
+
+    .copyright {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #1e293b;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-inner">
+      <a href="#" class="logo">
+        <span>⚡</span>
+        EnergoKvartyra
+      </a>
+      <nav>
+        <a href="#calculator">Калькулятор</a>
+        <a href="#compare">Порівняння</a>
+        <a href="#guides">Гайди</a>
+        <a href="#contact">Консультація</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1>Резервне живлення<br>для вашої квартири</h1>
+      <p>Підберемо інвертор і батарею так, щоб світло, інтернет і холодильник працювали навіть під час довгих відключень</p>
+      <a href="#calculator" class="btn btn-primary">Розрахувати систему →</a>
+    </div>
+  </section>
+
+  <!-- Calculator -->
+  <section class="section" id="calculator">
+    <div class="container">
+      <h2 class="section-title">Калькулятор підбору</h2>
+      <p class="section-subtitle">Оберіть прилади, які мають працювати під час блекауту, і вкажіть бажаний час автономії</p>
+
+      <div class="calc-card">
+        <div class="calc-grid">
+          <!-- Left: Appliances -->
+          <div class="appliances">
+            <h3>Які прилади потрібні?</h3>
+            
+            <div class="appliance-item">
+              <div class="appliance-info">
+                <input type="checkbox" id="fridge" checked data-watts="150">
+                <div>
+                  <div class="appliance-name">Холодильник</div>
+                  <div class="appliance-watts">~150 Вт (середнє)</div>
+                </div>
+              </div>
+              <input type="number" class="hours-input" value="8" min="1" max="24" data-for="fridge">
+            </div>
+
+            <div class="appliance-item">
+              <div class="appliance-info">
+                <input type="checkbox" id="router" checked data-watts="15">
+                <div>
+                  <div class="appliance-name">Роутер + ONU</div>
+                  <div class="appliance-watts">~15 Вт</div>
+                </div>
+              </div>
+              <input type="number" class="hours-input" value="10" min="1" max="24" data-for="router">
+            </div>
+
+            <div class="appliance-item">
+              <div class="appliance-info">
+                <input type="checkbox" id="lights" checked data-watts="40">
+                <div>
+                  <div class="appliance-name">Освітлення (LED)</div>
+                  <div class="appliance-watts">~40 Вт</div>
+                </div>
+              </div>
+              <input type="number" class="hours-input" value="6" min="1" max="24" data-for="lights">
+            </div>
+
+            <div class="appliance-item">
+              <div class="appliance-info">
+                <input type="checkbox" id="laptop" data-watts="65">
+                <div>
+                  <div class="appliance-name">Ноутбук</div>
+                  <div class="appliance-watts">~65 Вт</div>
+                </div>
+              </div>
+              <input type="number" class="hours-input" value="4" min="1" max="24" data-for="laptop">
+            </div>
+
+            <div class="appliance-item">
+              <div class="appliance-info">
+                <input type="checkbox" id="tv" data-watts="80">
+                <div>
+                  <div class="appliance-name">Телевізор</div>
+                  <div class="appliance-watts">~80 Вт</div>
+                </div>
+              </div>
+              <input type="number" class="hours-input" value="3" min="1" max="24" data-for="tv">
+            </div>
+
+            <div class="appliance-item">
+              <div class="appliance-info">
+                <input type="checkbox" id="boiler" data-watts="120">
+                <div>
+                  <div class="appliance-name">Газовий котел (електроніка)</div>
+                  <div class="appliance-watts">~100–150 Вт</div>
+                </div>
+              </div>
+              <input type="number" class="hours-input" value="8" min="1" max="24" data-for="boiler">
+            </div>
+
+            <div class="appliance-item">
+              <div class="appliance-info">
+                <input type="checkbox" id="phone" data-watts="15">
+                <div>
+                  <div class="appliance-name">Зарядки телефонів</div>
+                  <div class="appliance-watts">~15 Вт</div>
+                </div>
+              </div>
+              <input type="number" class="hours-input" value="4" min="1" max="24" data-for="phone">
+            </div>
+
+            <div style="margin-top: 24px;">
+              <button class="btn btn-accent" onclick="calculate()" style="width: 100%;">
+                Розрахувати систему
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Results -->
+          <div>
+            <div class="result-box" id="results">
+              <h3>Результат розрахунку</h3>
+              <div class="result-row">
+                <span>Середнє навантаження:</span>
+                <strong id="avg-load">—</strong>
+              </div>
+              <div class="result-row">
+                <span>Потрібна енергія:</span>
+                <strong id="energy-needed">—</strong>
+              </div>
+              <div class="result-row">
+                <span>Рекомендована батарея:</span>
+                <strong id="battery-rec">—</strong>
+              </div>
+              <div class="result-row">
+                <span>Потужність інвертора:</span>
+                <strong id="inverter-rec">—</strong>
+              </div>
+
+              <div class="recommendation" id="recommendations">
+                <p style="margin-bottom: 12px; font-weight: 600; color: var(--primary-dark);">Рекомендовані комплекти:</p>
+                <!-- Will be filled by JS -->
+              </div>
+            </div>
+
+            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--muted);">
+              <p>* Розрахунок враховує ККД інвертора ~92% та глибину розряду LiFePO4 90%.</p>
+              <p style="margin-top: 6px;">* Ціни орієнтовні на листопад 2026.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison -->
+  <section class="section" id="compare" style="background: #f1f5f9;">
+    <div class="container">
+      <h2 class="section-title">Популярні рішення для квартир</h2>
+      <p class="section-subtitle">Актуальні моделі гібридних інверторів під 48В батареї</p>
+
+      <div style="overflow-x: auto;">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Модель</th>
+              <th>Потужність</th>
+              <th>Шум</th>
+              <th>Холостий хід</th>
+              <th>Для кого</th>
+              <th>Орієнтовна ціна</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Deye SUN-6K-SG05LP1</strong></td>
+              <td>6 кВт</td>
+              <td>Середній</td>
+              <td>~45–60 Вт</td>
+              <td>Найпопулярніший вибір</td>
+              <td>45–55 тис. грн</td>
+            </tr>
+            <tr>
+              <td><strong>Deye SUN-5K-SG05LP1</strong></td>
+              <td>5 кВт</td>
+              <td>Середній</td>
+              <td>~40–55 Вт</td>
+              <td>Невелика квартира</td>
+              <td>40–48 тис. грн</td>
+            </tr>
+            <tr>
+              <td><strong>Luxpower SNA 5–6K</strong></td>
+              <td>5–6 кВт</td>
+              <td>Тихіший</td>
+              <td>~40 Вт</td>
+              <td>Хороша альтернатива</td>
+              <td>38–50 тис. грн</td>
+            </tr>
+            <tr>
+              <td><strong>Victron MultiPlus-II</strong></td>
+              <td>3–5 кВт</td>
+              <td>Дуже тихий</td>
+              <td>~8–18 Вт</td>
+              <td>Преміум, мінімальні втрати</td>
+              <td>50–70 тис. грн</td>
+            </tr>
+            <tr>
+              <td><strong>Marstek Venus / All-in-one</strong></td>
+              <td>1.5–2.5 кВт</td>
+              <td>Тихий</td>
+              <td>Низький</td>
+              <td>Компактне рішення «все в одному»</td>
+              <td>35–60 тис. грн</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features / Guides -->
+  <section class="section" id="guides">
+    <div class="container">
+      <h2 class="section-title">Що важливо знати перед покупкою</h2>
+      <p class="section-subtitle">Типові помилки та важливі нюанси саме для квартир</p>
+
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">🔇</div>
+          <h3>Шум інвертора</h3>
+          <p>Більшість китайських гібридів мають вентилятори. У квартирі краще ставити в коридорі або комірці. Victron і деякі all-in-one значно тихіші.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔌</div>
+          <h3>Проводка в панельному будинку</h3>
+          <p>Не можна просто «встромити» потужний інвертор. Потрібен правильний автомат, УЗО і перевірка перерізу кабелів. Інакше є ризик пожежі.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔋</div>
+          <h3>Ємність батареї</h3>
+          <p>Для квартири найчастіше вистачає 5.12 або 10.24 кВт·год. Два модулі по 5.12 кВт·год — найгнучкіший варіант.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📉</div>
+          <h3>Власне споживання</h3>
+          <p>Інвертор сам «з’їдає» 40–80 Вт. За добу це 1–2 кВт·год. У Victron цей показник значно нижчий.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="container">
+    <div class="cta" id="contact">
+      <h2>Потрібна персональна консультація?</h2>
+      <p>Напишіть, що саме хочете живити і скільки годин автономії потрібно — підберемо оптимальний варіант під бюджет</p>
+      <a href="mailto:hello@energokvartyra.ua" class="btn btn-primary">Написати нам</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-logo">⚡ EnergoKvartyra</div>
+          <p>Резервне живлення для квартир в Україні</p>
+        </div>
+        <div>
+          <p><strong>Навігація</strong></p>
+          <p><a href="#calculator">Калькулятор</a></p>
+          <p><a href="#compare">Порівняння</a></p>
+          <p><a href="#guides">Гайди</a></p>
+        </div>
+        <div>
+          <p><strong>Контакти</strong></p>
+          <p>hello@energokvartyra.ua</p>
+          <p>Telegram / Viber (скоро)</p>
+        </div>
+      </div>
+      <div class="copyright">
+        © 2026 EnergoKvartyra. Прототип. Інформація носить ознайомчий характер.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function calculate() {
+      const checkboxes = document.querySelectorAll('.appliance-item input[type="checkbox"]');
+      let totalWh = 0;
+      let maxWatts = 0;
+      let selectedCount = 0;
+
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          const watts = parseFloat(cb.dataset.watts);
+          const hoursInput = document.querySelector(`.hours-input[data-for="${cb.id}"]`);
+          const hours = parseFloat(hoursInput.value) || 0;
+          
+          totalWh += watts * hours;
+          maxWatts += watts;
+          selectedCount++;
+        }
+      });
+
+      if (selectedCount === 0) {
+        alert('Оберіть хоча б один прилад');
+        return;
+      }
+
+      // Efficiency 92%, DoD 90%
+      const neededEnergy = totalWh / 0.92 / 0.90; // Wh
+      const neededKwh = neededEnergy / 1000;
+
+      // Average load approximation
+      const avgLoad = Math.round(totalWh / 8); // rough
+
+      // Recommendations
+      let batteryText = '';
+      let inverterText = '';
+      let recsHtml = '';
+
+      if (neededKwh <= 5.5) {
+        batteryText = '5.12 кВт·год (1 модуль)';
+        inverterText = '3.6–5 кВт';
+        recsHtml = `
+          <div class="rec-item">
+            <div>
+              <span class="badge badge-budget">Бюджет</span>
+              <strong style="margin-left:8px;">Deye 5K + 5.12 кВт·год</strong>
+            </div>
+            <div class="price">~85–100 тис. грн</div>
+          </div>
+          <div class="rec-item">
+            <div>
+              <span class="badge badge-best">Оптимум</span>
+              <strong style="margin-left:8px;">Deye 6K + 5.12 кВт·год</strong>
+            </div>
+            <div class="price">~95–115 тис. грн</div>
+          </div>
+        `;
+      } else if (neededKwh <= 11) {
+        batteryText = '10.24 кВт·год (2 модулі)';
+        inverterText = '5–6 кВт';
+        recsHtml = `
+          <div class="rec-item">
+            <div>
+              <span class="badge badge-best">Найкращий вибір</span>
+              <strong style="margin-left:8px;">Deye 6K + 2×5.12 кВт·год</strong>
+            </div>
+            <div class="price">~140–165 тис. грн</div>
+          </div>
+          <div class="rec-item">
+            <div>
+              <span class="badge badge-premium">Преміум</span>
+              <strong style="margin-left:8px;">Victron + 10 кВт·год</strong>
+            </div>
+            <div class="price">~180–220 тис. грн</div>
+          </div>
+        `;
+      } else {
+        batteryText = '15+ кВт·год (3 модулі)';
+        inverterText = '6–8 кВт';
+        recsHtml = `
+          <div class="rec-item">
+            <div>
+              <span class="badge badge-best">Рекомендуємо</span>
+              <strong style="margin-left:8px;">Deye 6–8K + 15 кВт·год</strong>
+            </div>
+            <div class="price">~190–240 тис. грн</div>
+          </div>
+        `;
+      }
+
+      // Update UI
+      document.getElementById('avg-load').textContent = Math.round(maxWatts) + ' Вт (пік)';
+      document.getElementById('energy-needed').textContent = neededKwh.toFixed(1) + ' кВт·год';
+      document.getElementById('battery-rec').textContent = batteryText;
+      document.getElementById('inverter-rec').textContent = inverterText;
+      document.getElementById('recommendations').innerHTML = `
+        <p style="margin-bottom: 12px; font-weight: 600; color: var(--primary-dark);">Рекомендовані комплекти:</p>
+        ${recsHtml}
+      `;
+    }
+
+    // Auto-calculate on load
+    window.addEventListener('DOMContentLoaded', calculate);
+  </script>
+</body>
+</html>
